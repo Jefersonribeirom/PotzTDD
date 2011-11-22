@@ -1,0 +1,83 @@
+using System;
+using System.Linq;
+
+namespace Potz
+{
+  public class PotzClass
+  {
+    private static Int64 _numeroPotz = 0;
+    public PotzClass(string numPotz)
+    {
+      numPotz = numPotz.Replace("-", "");
+
+      if (numPotz.Any(letra => letra < 48 || letra > 57) || numPotz.Length == 0)
+        _numeroPotz = -2;
+      else
+        _numeroPotz = Convert.ToInt64(numPotz);
+    }
+
+    public PotzClass(int numPotz)
+    {
+      _numeroPotz = numPotz;
+    }
+
+    public int RetornarNumeroPotz()
+    {
+      if (_numeroPotz == -2)
+        return -1;
+
+      if (!(_numeroPotz.ToString().Length > 7 && _numeroPotz.ToString().Length < 11))
+        return -1;
+
+      //Inverte o número Potz pois os primeiros digitos podem variar em
+      //3 casas 
+      char[] PotzArray = _numeroPotz.ToString().ToCharArray();
+      Array.Reverse(PotzArray);
+      string PotzInvertido = new String(PotzArray);
+
+      bool boolNumPassouMod11 = false;
+      boolNumPassouMod11 = TestarNumMod11(PotzInvertido);
+
+      if (!boolNumPassouMod11)
+        return -1;
+
+      char[] retornoPotzArray = PotzInvertido.Substring(7).ToCharArray();
+      Array.Reverse(retornoPotzArray);
+      int retornoPotzInvertido = int.Parse(new String(retornoPotzArray));
+
+      return retornoPotzInvertido;
+    }
+
+    private bool TestarNumMod11(string PotzInvertido)
+    {
+      string PotzNumMod11 = PotzInvertido.Substring(0, 7);
+      int numSoma = 0;
+      int charIndex = 1;
+      for (int mult = 2; mult <= 7; mult++)
+      {
+        numSoma += int.Parse(PotzNumMod11[charIndex].ToString()) * mult;
+        charIndex++;
+      }
+
+      return ((numSoma * 10) % 11) == int.Parse(PotzNumMod11[0].ToString());
+    }
+  }
+
+  public class TesteVerificarPotz
+  {
+    public void Teste()
+    {
+      const string numPotz = "500261533-9";
+      var qtdPotz = 0;
+
+      PotzClass potz = new PotzClass(numPotz);
+      qtdPotz = potz.RetornarNumeroPotz();
+
+      string retorno;
+      retorno = qtdPotz > 1 ? string.Concat("Número Potz Válido. Qtd = {0}", qtdPotz) : "Número Potz inválido";
+
+    }
+  }
+}
+
+//Parte principal do programa
